@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A.G. Riddle — Sci-Fi Thriller Author</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #03040a;
+    --deep: #080c18;
+    --surface: #0d1428;
+    --panel: #111a30;
+    --edge: #1c2a45;
+    --signal: #00d4ff;
+    --signal-dim: rgba(0, 212, 255, 0.15);
+    --signal-glow: rgba(0, 212, 255, 0.4);
+    --warn: #ff6b35;
+    --warn-dim: rgba(255, 107, 53, 0.2);
+    --text: #c8d8f0;
+    --text-dim: #6a7d9a;
+    --text-faint: #2d3d5a;
+    --white: #e8f0ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── SCAN LINE ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    right: 0;
+    height: 200%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 212, 255, 0.015) 2px,
+      rgba(0, 212, 255, 0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+    animation: scanlines 8s linear infinite;
+  }
+
+  @keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: linear-gradient(to bottom, rgba(3,4,10,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.15em;
+    color: var(--white);
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-logo span {
+    color: var(--signal);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--signal);
+    transition: width 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--signal); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--void) !important;
+    background: var(--signal);
+    padding: 8px 20px;
+    text-decoration: none;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .nav-cta:hover {
+    background: var(--white) !important;
+    color: var(--void) !important;
+  }
+
+  .nav-cta::after { display: none !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+    gap: 60px;
+  }
+
+  /* Animated star/particle bg */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0, 50, 100, 0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255, 107, 53, 0.05) 0%, transparent 60%),
+      var(--void);
+  }
+
+  .star-field {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: var(--min); transform: scale(1); }
+    to { opacity: var(--max); transform: scale(1.5); }
+  }
+
+  /* Grid lines */
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 70% 70% at 70% 50%, black 0%, transparent 100%);
+  }
+
+  /* Floating numbers */
+  .float-numbers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .float-num {
+    position: absolute;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--signal);
+    opacity: 0;
+    animation: floatUp var(--dur) linear var(--delay) infinite;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    10% { opacity: 0.6; }
+    80% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-80px); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--signal);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .hero-title .line2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200, 216, 240, 0.4);
+    padding-left: 60px;
+  }
+
+  .hero-title .line3 {
+    display: block;
+    color: var(--signal);
+    text-shadow: 0 0 40px var(--signal-glow);
+  }
+
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .glitch::before {
+    color: var(--warn);
+    animation: glitch1 4s infinite;
+    clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    opacity: 0.6;
+  }
+
+  .glitch::after {
+    color: var(--signal);
+    animation: glitch2 4s infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+    opacity: 0.5;
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(2px, -1px); }
+    96% { transform: translate(-1px, 2px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 91%, 100% { transform: translate(0); }
+    93% { transform: translate(3px, -1px); }
+    95% { transform: translate(-2px, 1px); }
+    97% { transform: translate(1px, -2px); }
+  }
+
+  .hero-desc {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin-bottom: 48px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .hero-desc strong {
+    color: var(--text);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: var(--signal);
+    padding: 16px 36px;
+    text-decoration: none;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.2s;
+    box-shadow: 0 0 30px var(--signal-glow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+
+  .btn-primary:hover { box-shadow: 0 0 60px var(--signal-glow); }
+  .btn-primary:hover::before { transform: translateX(0); opacity: 0.2; }
+
+  .btn-secondary {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--edge);
+    padding-bottom: 4px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .btn-secondary:hover { color: var(--white); border-color: var(--signal); }
+
+  /* ── BOOK COVER ── */
+  .hero-book {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .book-wrap {
+    position: relative;
+    width: 340px;
+  }
+
+  .book-glow {
+    position: absolute;
+    inset: -60px;
+    background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulseGlow {
+    from { opacity: 0.5; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1.05); }
+  }
+
+  .book-cover {
+    width: 100%;
+    border-radius: 3px;
+    box-shadow:
+      20px 20px 60px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(0, 212, 255, 0.2),
+      -4px 0 0 rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1;
+    animation: float 6s ease-in-out infinite;
+    background: linear-gradient(135deg, #0a1628 0%, #071020 40%, #030810 100%);
+    aspect-ratio: 2/3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 30px;
+    overflow: hidden;
+  }
+
+  .book-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 212, 255, 0.03) 3px,
+        rgba(0, 212, 255, 0.03) 4px
+      );
+  }
+
+  /* Maze/labyrinth graphic inside book */
+  .book-maze {
+    position: absolute;
+    inset: 0;
+    opacity: 0.15;
+  }
+
+  .book-top-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.4em;
+    color: var(--signal);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .book-title-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4.5rem;
+    color: var(--white);
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+  }
+
+  .book-divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--signal), transparent);
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .book-code {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--signal);
+    opacity: 0.8;
+    letter-spacing: 0.15em;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: codeFlicker 2s ease-in-out infinite;
+    margin-bottom: 24px;
+  }
+
+  @keyframes codeFlicker {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+  }
+
+  .book-author {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    color: rgba(200, 216, 240, 0.6);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+  }
+
+  .book-tag {
+    position: absolute;
+    top: 20px;
+    right: -16px;
+    background: var(--warn);
+    color: var(--void);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    z-index: 10;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    animation: tagPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes tagPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,107,53,0); }
+    50% { box-shadow: 0 0 20px rgba(255,107,53,0.5); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-16px) rotate(0deg); }
+  }
+
+  /* ── DECODE STRIP ── */
+  .decode-strip {
+    background: var(--surface);
+    border-top: 1px solid var(--edge);
+    border-bottom: 1px solid var(--edge);
+    padding: 20px 48px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .decode-strip::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 100px;
+    background: linear-gradient(to right, var(--surface), transparent);
+    z-index: 1;
+  }
+
+  .decode-strip::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 100px;
+    background: linear-gradient(to left, var(--surface), transparent);
+    z-index: 1;
+  }
+
+  .decode-ticker {
+    display: flex;
+    gap: 60px;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+  }
+
+  .decode-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--signal);
+    text-transform: uppercase;
+  }
+
+  .decode-item span {
+    color: var(--text-faint);
+    margin: 0 12px;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── BOOKS SECTION ── */
+  .section {
+    padding: 120px 48px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 72px;
+  }
+
+  .section-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--signal);
+    letter-spacing: 0.2em;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--edge), transparent);
+  }
+
+  /* Books grid */
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+
+  .book-card {
+    position: relative;
+    cursor: pointer;
+    group: true;
+  }
+
+  .book-card-inner {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    padding: 28px 24px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-card-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--signal-dim) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .book-card:hover .book-card-inner {
+    border-color: var(--signal);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--signal-dim);
+  }
+
+  .book-card:hover .book-card-inner::before { opacity: 1; }
+
+  .book-card-thumb {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: linear-gradient(145deg, var(--surface), var(--void));
+    border-radius: 2px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--signal);
+    letter-spacing: 0.05em;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--edge);
+  }
+
+  .book-card-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 212, 255, 0.02) 20px,
+      rgba(0, 212, 255, 0.02) 21px
+    );
+  }
+
+  .book-series-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--signal);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .book-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .book-card-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .book-card-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--signal);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.2s;
+  }
+
+  .book-card:hover .book-card-thumb img { transform: scale(1.05); }
+
+  .book-card-link::after {
+    content: '→';
+    transition: transform 0.2s;
+  }
+
+  .book-card:hover .book-card-link { gap: 12px; }
+
+  /* ── ABOUT ── */
+  .about-section {
+    background: var(--deep);
+    padding: 120px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--signal), transparent);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1200px;
+  }
+
+  .about-portrait {
+    position: relative;
+  }
+
+  .portrait-frame {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .portrait-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(135deg, rgba(0,212,255,0.05) 0%, transparent 50%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 30px,
+        rgba(0, 212, 255, 0.03) 30px,
+        rgba(0, 212, 255, 0.03) 31px
+      );
+  }
+
+  .portrait-initials {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .portrait-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--signal);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .portrait-corner.tl { top: 10px; left: 10px; border-top-width: 2px; border-left-width: 2px; }
+  .portrait-corner.tr { top: 10px; right: 10px; border-top-width: 2px; border-right-width: 2px; }
+  .portrait-corner.bl { bottom: 10px; left: 10px; border-bottom-width: 2px; border-left-width: 2px; }
+  .portrait-corner.br { bottom: 10px; right: 10px; border-bottom-width: 2px; border-right-width: 2px; }
+
+  .about-body h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .about-body .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    color: var(--signal);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .about-body p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+    padding-top: 48px;
+    border-top: 1px solid var(--edge);
+  }
+
+  .stat-item {}
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--signal);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* ── EMAIL SIGNUP ── */
+  .signal-section {
+    padding: 120px 48px;
+    background: var(--void);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(0, 50, 100, 0.2) 0%, transparent 70%);
+  }
+
+  .signal-inner {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+
+  .signal-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 32px;
+    border: 1px solid var(--signal);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--signal-dim);
+    animation: hexPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes hexPulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--signal-dim); }
+    50% { box-shadow: 0 0 0 16px transparent; }
+  }
+
+  .signal-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--signal);
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  .signal-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .signal-section p {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    margin-bottom: 48px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .signal-perks {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .perk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .perk::before {
+    content: '◆';
+    color: var(--signal);
+    font-size: 0.5rem;
+  }
+
+  .email-form {
+    display: flex;
+    gap: 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .email-input {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-right: none;
+    padding: 16px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .email-input::placeholder {
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+
+  .email-input:focus { border-color: var(--signal); }
+
+  .email-btn {
+    background: var(--signal);
+    color: var(--void);
+    border: none;
+    padding: 16px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+
+  .email-btn:hover { background: var(--white); }
+
+  .email-note {
+    margin-top: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--deep);
+    border-top: 1px solid var(--edge);
+    padding: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    color: var(--white);
+  }
+
+  .footer-logo span { color: var(--signal); }
+
+  .footer-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--signal); }
+
+  .footer-social {
+    display: flex;
+    gap: 16px;
+  }
+
+  .social-link {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--edge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+  }
+
+  .social-link:hover {
+    border-color: var(--signal);
+    color: var(--signal);
+    background: var(--signal-dim);
+  }
+
+  .footer-copy {
+    width: 100%;
+    padding-top: 32px;
+    border-top: 1px solid var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-code {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+    animation: codeFlicker 3s ease-in-out infinite;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { gap: 20px; }
+    .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; }
+    .hero-book { display: none; }
+    .section { padding: 80px 24px; }
+    .books-grid { grid-template-columns: repeat(2, 1fr); }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-portrait { display: none; }
+    footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+    .signal-section { padding: 80px 24px; }
+  }
+
+  /* ── ENTRANCE ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Horizontal scan line effect on hover elements */
+  .scan-hover {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--signal), transparent);
+    top: -2px;
+    transition: top 0.4s;
+    opacity: 0;
+  }
+
+  .scan-hover:hover::after {
+    top: 100%;
+    opacity: 0.5;
+    transition: top 0.6s, opacity 0.1s;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">A<span>.</span>G<span>.</span> RIDDLE</a>
+  <ul class="nav-links">
+    <li><a href="#books">Books</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#">Extras</a></li>
+    <li><a href="#signal" class="nav-cta">Join the List</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="star-field" id="stars"></div>
+  <div class="grid-lines"></div>
+  <div class="float-numbers" id="floatNums"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Latest Release</div>
+    <h1 class="hero-title">
+      <span class="glitch" data-text="DECODE">DECODE</span>
+      <span class="line2">THE NUMBERS</span>
+      <span class="line3">LABYRINTH</span>
+    </h1>
+    <p class="hero-desc">
+      When a group of strangers with tinnitus begin seeing <strong>the same sequence of numbers</strong>, they discover a code with implications beyond imagination — and an impossible decision that will determine the fate of everything.
+    </p>
+    <div class="hero-actions">
+      <a href="https://www.amazon.com/gp/product/B0FQV29KQW" target="_blank" class="btn-primary">Order Now</a>
+      <a href="#books" class="btn-secondary">View All Books</a>
+    </div>
+  </div>
+
+  <div class="hero-book">
+    <div class="book-wrap">
+      <div class="book-glow"></div>
+      <div class="book-cover" style="padding:0;background:none;">
+        <img src="https://www.agriddle.com/img/LabyrinthCover.jpg?v=3" alt="Labyrinth by A.G. Riddle" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:3px;">
+      </div>
+      <div class="book-tag">New Release</div>
+    </div>
+  </div>
+</section>
+
+<!-- DECODE STRIP -->
+<div class="decode-strip">
+  <div class="decode-ticker" id="ticker">
+    <span class="decode-item">DECODE THE NUMBERS <span>◆</span></span>
+    <span class="decode-item">CONTROL THE FUTURE <span>◆</span></span>
+    <span class="decode-item">THE ATLANTIS GENE <span>◆</span></span>
+    <span class="decode-item">ORIGIN MYSTERY <span>◆</span></span>
+    <span class="decode-item">LOST IN TIME <span>◆</span></span>
+    <span class="decode-item">MILLIONS OF READERS <span>◆</span></span>
+    <span class="decode-item">DECODE THE NUMBERS <span>◆</span></span>
+    <span class="decode-item">CONTROL THE FUTURE <span>◆</span></span>
+    <span class="decode-item">THE ATLANTIS GENE <span>◆</span></span>
+    <span class="decode-item">ORIGIN MYSTERY <span>◆</span></span>
+    <span class="decode-item">LOST IN TIME <span>◆</span></span>
+    <span class="decode-item">MILLIONS OF READERS <span>◆</span></span>
+  </div>
+</div>
+
+<!-- BOOKS -->
+<section class="section" id="books">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">The Books</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="books-grid">
+    <!-- Labyrinth -->
+    <div class="book-card fade-up scan-hover">
+      <div class="book-card-inner">
+        <div class="book-card-thumb" style="padding:0;overflow:hidden;">
+          <img src="https://www.agriddle.com/img/LabyrinthCover.jpg?v=3" alt="Labyrinth" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+        </div>
+        <div class="book-series-tag">// New Release 2024</div>
+        <div class="book-card-title">Labyrinth</div>
+        <div class="book-card-subtitle">Decode the numbers. Control the future. Discover what lies beyond imagination.</div>
+        <a href="https://www.amazon.com/gp/product/B0FQV29KQW" class="book-card-link" target="_blank">Order Now</a>
+      </div>
+    </div>
+
+    <!-- Lost in Time -->
+    <div class="book-card fade-up scan-hover" style="transition-delay:0.1s">
+      <div class="book-card-inner">
+        <div class="book-card-thumb" style="padding:0;overflow:hidden;">
+          <img src="https://www.agriddle.com/img/lit_cover_large.jpg?v=3" alt="Lost in Time" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+        </div>
+        <div class="book-series-tag">// Standalone</div>
+        <div class="book-card-title">Lost in Time</div>
+        <div class="book-card-subtitle">A father. A deadly prison. A secret that could shatter the fabric of time itself.</div>
+        <a href="https://www.amazon.com/Lost-Time-G-Riddle/dp/1838777636" class="book-card-link" target="_blank">Order Now</a>
+      </div>
+    </div>
+
+    <!-- The Atlantis Gene -->
+    <div class="book-card fade-up scan-hover" style="transition-delay:0.2s">
+      <div class="book-card-inner">
+        <div class="book-card-thumb" style="padding:0;overflow:hidden;">
+          <img src="https://www.agriddle.com/img/covers/large/gene.jpg?v=3" alt="The Atlantis Gene" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+        </div>
+        <div class="book-series-tag">// Atlantis Series — Book 1</div>
+        <div class="book-card-title">The Atlantis Gene</div>
+        <div class="book-card-subtitle">An ancient secret. A human experiment. The fate of our species in the balance.</div>
+        <a href="https://www.amazon.com/Atlantis-Gene-Thriller-Origin-Mystery/dp/B00IASF27E" class="book-card-link" target="_blank">Order Now</a>
+      </div>
+    </div>
+
+    <!-- The Departure -->
+    <div class="book-card fade-up scan-hover" style="transition-delay:0.3s">
+      <div class="book-card-inner">
+        <div class="book-card-thumb" style="padding:0;overflow:hidden;">
+          <img src="https://www.agriddle.com/img/departure_cover_large2.jpg?v=3" alt="The Departure" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+        </div>
+        <div class="book-series-tag" style="color:var(--warn)">// Long Winter Series — Book 1</div>
+        <div class="book-card-title">The Departure</div>
+        <div class="book-card-subtitle">Earth is dying. Two factions disagree on who survives. And one man holds the truth.</div>
+        <a href="https://www.amazon.com/Departure-Long-Winter-Trilogy-Book/dp/B07NQGD5YH" class="book-card-link" style="color:var(--warn)" target="_blank">Order Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-grid">
+    <div class="about-portrait fade-up">
+      <div class="portrait-frame" style="padding:0;overflow:hidden;">
+        <img src="https://www.agriddle.com/img/profile2.jpg" alt="A.G. Riddle" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;filter:grayscale(20%) contrast(1.05);">
+        <div class="portrait-corner tl"></div>
+        <div class="portrait-corner tr"></div>
+        <div class="portrait-corner bl"></div>
+        <div class="portrait-corner br"></div>
+      </div>
+    </div>
+    <div class="about-body fade-up">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+        <span class="section-number">02</span>
+        <div style="height:1px;width:40px;background:var(--edge)"></div>
+      </div>
+      <h2>A.G. Riddle</h2>
+      <p class="subtitle">New York Times Bestselling Author</p>
+      <p>
+        A.G. Riddle spent ten years building and selling internet companies before retiring to pursue his first love: writing fiction. He has sold over five million copies worldwide, with his books translated into two dozen languages.
+      </p>
+      <p>
+        His novels explore the intersection of science, history, and human nature — weaving together ancient mysteries, near-future technology, and the timeless question of what it means to be human. Every story begins with a single obsessive question that won't let go.
+      </p>
+      <div class="about-stats">
+        <div class="stat-item">
+          <div class="stat-num">5M+</div>
+          <div class="stat-label">Books Sold</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">24</div>
+          <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">12+</div>
+          <div class="stat-label">Novels</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EMAIL SIGNAL -->
+<section class="signal-section" id="signal">
+  <div class="signal-inner">
+    <div class="signal-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/>
+      </svg>
+    </div>
+    <h2>Intercept the Signal</h2>
+    <p>
+      Be first to receive transmissions — new releases, exclusive previews, and limited-time offers. 2–3 messages per year. Zero noise. Never sold.
+    </p>
+    <div class="signal-perks">
+      <span class="perk">Sneak Peeks</span>
+      <span class="perk">Giveaways</span>
+      <span class="perk">Launch Deals</span>
+    </div>
+    <div class="email-form">
+      <input type="email" class="email-input" placeholder="enter your email address">
+      <button class="email-btn">Tune In</button>
+    </div>
+    <p class="email-note">// encrypted · never shared · unsubscribe anytime</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">A<span>.</span>G<span>.</span> RIDDLE</div>
+  <ul class="footer-links">
+    <li><a href="#">Books</a></li>
+    <li><a href="#">Extras</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Privacy</a></li>
+  </ul>
+  <div class="footer-social">
+    <a href="https://www.goodreads.com/author/show/3087199.A_G_Riddle" class="social-link" target="_blank" title="Goodreads">GR</a>
+    <a href="https://instagram.com/riddlist/" class="social-link" target="_blank" title="Instagram">IG</a>
+    <a href="https://www.facebook.com/agriddle" class="social-link" target="_blank" title="Facebook">FB</a>
+    <a href="https://twitter.com/Riddlist" class="social-link" target="_blank" title="Twitter/X">TW</a>
+  </div>
+  <div class="footer-copy">
+    <p>© A.G. Riddle. All rights reserved.</p>
+    <span class="footer-code">// SIGNAL_ACTIVE · BOOKS_ONLINE · NODE_04</span>
+  </div>
+</footer>
+
+<script>
+  // ── GENERATE STARS ──
+  const starField = document.getElementById('stars');
+  for (let i = 0; i < 200; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      width: ${size}px;
+      height: ${size}px;
+      --d: ${2 + Math.random() * 4}s;
+      --min: ${0.1 + Math.random() * 0.2};
+      --max: ${0.5 + Math.random() * 0.5};
+      animation-delay: ${Math.random() * 4}s;
+    `;
+    starField.appendChild(s);
+  }
+
+  // ── GENERATE FLOATING NUMBERS ──
+  const numCodes = ['4·8·15·16·23·42', '7·3·19·11·88', '∑∞√π', '01001000', '10110011', 'Ω·Δ·Σ', '3.14159', '1.61803', '42.0'];
+  const floatNums = document.getElementById('floatNums');
+  for (let i = 0; i < 20; i++) {
+    const n = document.createElement('div');
+    n.className = 'float-num';
+    n.textContent = numCodes[Math.floor(Math.random() * numCodes.length)];
+    n.style.cssText = `
+      left: ${Math.random() * 90}%;
+      top: ${50 + Math.random() * 50}%;
+      --dur: ${6 + Math.random() * 8}s;
+      --delay: ${Math.random() * 8}s;
+    `;
+    floatNums.appendChild(n);
+  }
+
+  // ── SCROLL FADE-IN ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── HERO FADE IN ON LOAD ──
+  window.addEventListener('load', () => {
+    document.querySelector('.hero-content').style.animation = 'none';
+    const els = document.querySelectorAll('.hero-eyebrow, .hero-title, .hero-desc, .hero-actions');
+    els.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity 0.8s ${i * 0.15}s, transform 0.8s ${i * 0.15}s`;
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  });
+</script>
+</body>
+</html>
